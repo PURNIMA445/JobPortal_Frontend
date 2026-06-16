@@ -1,18 +1,18 @@
 import Button from "@/components/ui/Button";
 import useAuth from "@/hooks/useAuth";
-import { getJobs } from "@/lib/api";
+// import { getJobs } from "@/lib/api";
 import Input from "@/components/ui/Input";
 import Card from "@/components/ui/Card";
 export default function HomePage() {
   const { user } = useAuth();
 
-  const jobs = getJobs();
+  // const jobs = getJobs();
 
   return (
     <>
       <h1>Hello {user}</h1>
 
-      <p>{jobs[0]}</p>
+      {/* <p>{jobs[0]}</p> */}
       <div className="flex gap-1.5">
         <Button className="px-4 py-4 text-lg">
           Look here
