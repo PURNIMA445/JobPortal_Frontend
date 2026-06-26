@@ -1,9 +1,13 @@
 "use client";
-import { signupUser } from "@/lib/api";
+import { signupUser, loginUser } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+
+// --- FIREBASE IMPORTS ---
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 
 const EmailIcon = () => (
   <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -40,6 +44,9 @@ export default function SignupPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Add loginUser to your imports at the top:
+// import { signupUser, loginUser } from "@/lib/api";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -52,11 +59,28 @@ export default function SignupPage() {
         role: role, 
       };
 
-      const res = await signupUser(payload);
-      console.log("Signup success:", res);
+      // 1. Create the account
+      await signupUser(payload);
       
-      // FIX 1: Redirect to home page instead of /login
-      router.push("/");
+      // 2. Automatically log them in using the exact same credentials
+      const loginData = await loginUser({ email: form.email, password: form.password });
+      
+      // 3. Save the tokens (both localStorage and cookies for middleware)
+      if (loginData && loginData.token) {
+        localStorage.setItem("token", loginData.token);
+        localStorage.setItem("role", role);
+        document.cookie = `token=${loginData.token}; path=/; max-age=86400`;
+      }
+
+      // 4. Smart Redirect based on the selected role
+      if (role === "RECRUITER") {
+        router.push("/recruiter/setup");
+      } else if (role === "CANDIDATE") {
+        router.push("/profile/setup");
+      } else {
+        router.push("/");
+      }
+
     } catch (err) {
       setError(err.message || "Signup failed. Please try again.");
     } finally {
@@ -64,11 +88,52 @@ export default function SignupPage() {
     }
   };
 
-  // FIX 2: Placeholder function for Social Logins
-  const handleSocialLogin = (provider) => {
-    alert(`Initiating ${provider} login... (OAuth setup required)`);
-    // Example future logic:
-    // window.location.href = `http://localhost:8080/oauth2/authorization/${provider.toLowerCase()}`;
+  // --- GOOGLE LOGIN LOGIC ---
+  const handleSocialLogin = async (provider) => {
+    if (provider === "Google") {
+      try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const token = await result.user.getIdToken();
+        
+        const res = await fetch("http://localhost:8080/api/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            token: token,
+            role: role // Send the currently selected role tab
+          }),
+        });
+
+        if (!res.ok) throw new Error("Backend authentication failed");
+
+        const data = await res.json();
+        
+        // Save the tokens so the Header and protected routes know the user is logged in
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role || role);
+        // Add the cookie here as well so your middleware doesn't block them!
+        document.cookie = `token=${data.token}; path=/; max-age=86400`;
+        
+        // --- SMART REDIRECT BASED ON ROLE ---
+        const userRole = data.role || role;
+        
+        if (userRole === "RECRUITER") {
+            window.location.href = "/recruiter/setup";
+        } else if (userRole === "CANDIDATE") {
+            window.location.href = "/profile/setup";
+        } else {
+            window.location.href = "/";
+        }
+
+      } catch (err) {
+        console.error("Google login error:", err);
+        setError("Failed to sign in with Google. " + err.message);
+      }
+    } else {
+      alert(`${provider} is not set up yet! Let's finish Google first.`);
+    }
   };
 
   return (
@@ -81,15 +146,13 @@ export default function SignupPage() {
           transition={{ duration: 0.8 }}
           className="z-10"
         >
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 mb-16 w-max">
             <LogoIcon />
             <div>
               <h1 className="font-serif text-2xl font-bold text-gray-900 leading-tight">
-                Worthy
+                सीपसेतु
               </h1>
-              <p className="font-serif text-sm italic text-[#7A8B6A] -mt-1">
-                Jordan
-              </p>
             </div>
           </Link>
 

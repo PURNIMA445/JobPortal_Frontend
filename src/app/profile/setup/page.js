@@ -36,8 +36,12 @@ export default function CandidateSetupPage() {
 
   useEffect(() => {
     async function loadData() {
-      const skillList = await getAllSkills();
-      setSkills(skillList);
+      try {
+        const skillList = await getAllSkills();
+        setSkills(skillList);
+      } catch (err) {
+        console.error("Failed to load skills", err);
+      }
 
       try {
         const existing = await getCandidateProfile();
@@ -57,7 +61,9 @@ export default function CandidateSetupPage() {
             complexity: p.complexity || "BEGINNER",
           })) || [],
         });
-      } catch {}
+      } catch {
+        // Normal behavior if profile doesn't exist yet
+      }
     }
 
     loadData();
@@ -96,7 +102,9 @@ export default function CandidateSetupPage() {
     }));
   };
 
-  const handleSubmit = async () => {
+  // --- FIXED: ADDED e.preventDefault() ---
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
     setLoading(true);
     setError(null);
 
@@ -110,7 +118,7 @@ export default function CandidateSetupPage() {
 
       router.push("/dashboard/candidate");
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Failed to save profile.");
     } finally {
       setLoading(false);
     }
@@ -122,24 +130,22 @@ export default function CandidateSetupPage() {
   const labelClass = "text-xs font-semibold uppercase text-gray-600 tracking-wide";
 
   const btnClass =
-    "w-full bg-[#7A8B6A] hover:bg-[#6c7d5c] text-white py-2.5 rounded-lg font-semibold transition";
+    "w-full bg-[#7A8B6A] hover:bg-[#6c7d5c] disabled:opacity-70 text-white py-3 rounded-lg font-semibold transition mt-4";
 
   return (
     <div className="min-h-screen bg-[#F5F2EB] flex justify-center px-4 py-10 font-sans">
-
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm p-8">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-sm p-8 border border-[#E8E1D5]">
 
         {/* HEADER */}
         <h1 className="text-3xl font-serif font-bold text-gray-900 mb-1">
           Set up your profile
         </h1>
-
         <p className="text-gray-500 mb-8">
           Complete your profile to get better job matches
         </p>
 
-        {/* FORM */}
-        <div className="space-y-5">
+        {/* FIXED: WRAPPED IN A FORM */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
 
           {/* NAME */}
           <div>
@@ -147,50 +153,43 @@ export default function CandidateSetupPage() {
             <input
               className={inputClass}
               value={form.fullName}
-              onChange={e =>
-                setForm(f => ({ ...f, fullName: e.target.value }))
-              }
+              required // Matches backend @NotBlank
+              onChange={e => setForm(f => ({ ...f, fullName: e.target.value }))}
               placeholder="John Doe"
             />
           </div>
 
-          {/* PHONE */}
-          <div>
-            <label className={labelClass}>Phone</label>
-            <input
-              className={inputClass}
-              value={form.phone}
-              onChange={e =>
-                setForm(f => ({ ...f, phone: e.target.value }))
-              }
-              placeholder="98XXXXXXXX"
-            />
-          </div>
-
-          {/* LOCATION */}
-          <div>
-            <label className={labelClass}>Location</label>
-            <input
-              className={inputClass}
-              value={form.location}
-              onChange={e =>
-                setForm(f => ({ ...f, location: e.target.value }))
-              }
-              placeholder="Kathmandu, Nepal"
-            />
+          {/* PHONE & LOCATION GRID */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className={labelClass}>Phone</label>
+              <input
+                className={inputClass}
+                value={form.phone}
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                placeholder="98XXXXXXXX"
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Location</label>
+              <input
+                className={inputClass}
+                value={form.location}
+                onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                placeholder="Kathmandu, Nepal"
+              />
+            </div>
           </div>
 
           {/* BIO */}
           <div>
             <label className={labelClass}>Bio</label>
             <textarea
-              className={inputClass}
+              className={`${inputClass} resize-none`}
               rows={3}
               value={form.bio}
-              onChange={e =>
-                setForm(f => ({ ...f, bio: e.target.value }))
-              }
-              placeholder="Tell us about yourself"
+              onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
+              placeholder="Tell us about your professional background..."
             />
           </div>
 
@@ -199,7 +198,8 @@ export default function CandidateSetupPage() {
             <label className={labelClass}>Experience (years)</label>
             <input
               type="number"
-              className={inputClass}
+              min="0"
+              className={`${inputClass} sm:w-1/3`}
               value={form.experienceYears}
               onChange={e =>
                 setForm(f => ({
@@ -213,11 +213,9 @@ export default function CandidateSetupPage() {
           {/* SKILLS */}
           <div>
             <label className={labelClass}>Skills</label>
-
             <div className="flex flex-wrap gap-2 mt-2">
               {skills.map(skill => {
                 const active = form.skillIds.includes(skill.id);
-
                 return (
                   <button
                     key={skill.id}
@@ -234,111 +232,109 @@ export default function CandidateSetupPage() {
                   </button>
                 );
               })}
+              {skills.length === 0 && (
+                <p className="text-sm text-gray-400 italic">No skills available from server.</p>
+              )}
             </div>
           </div>
 
           {/* PROJECTS */}
-          <div>
-            <label className={labelClass}>Projects</label>
+          <div className="pt-4 border-t border-gray-100">
+            <label className={`${labelClass} block mb-3`}>Portfolio Projects</label>
 
-            <div className="space-y-2 mt-2">
+            {/* List Existing Projects */}
+            <div className="space-y-3 mb-4">
               {form.projects.map((p, i) => (
-                <div
-                  key={i}
-                  className="bg-gray-50 p-3 rounded-lg flex justify-between items-center"
-                >
+                <div key={i} className="bg-gray-50 border border-gray-100 p-4 rounded-xl flex justify-between items-start">
                   <div>
-                    <p className="font-semibold text-sm">{p.title}</p>
-                    <p className="text-xs text-gray-500">{p.complexity}</p>
+                    <p className="font-bold text-gray-900">{p.title}</p>
+                    <p className="text-xs font-semibold text-[#7A8B6A] mt-1">{p.complexity}</p>
+                    {p.techStack && <p className="text-sm text-gray-600 mt-1">{p.techStack}</p>}
                   </div>
-
                   <button
                     type="button"
                     onClick={() => removeProject(i)}
-                    className="text-red-500 text-xs"
+                    className="text-red-500 hover:text-red-700 text-sm font-semibold transition"
                   >
-                    Remove
+                    ✕ Remove
                   </button>
                 </div>
               ))}
             </div>
 
-            {/* ADD PROJECT */}
-            <div className="mt-3 space-y-2 border border-gray-200 rounded-lg p-3">
+            {/* ADD PROJECT FORM */}
+            <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-4 shadow-sm">
+              <p className="text-sm font-bold text-gray-800">Add a New Project</p>
+              
+              <input
+                className={inputClass}
+                placeholder="Project Title *"
+                value={project.title}
+                onChange={e => setProject(p => ({ ...p, title: e.target.value }))}
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input
+                  className={inputClass}
+                  placeholder="Tech Stack (e.g. React, Java)"
+                  value={project.techStack}
+                  onChange={e => setProject(p => ({ ...p, techStack: e.target.value }))}
+                />
+                <select
+                  className={inputClass}
+                  value={project.complexity}
+                  onChange={e => setProject(p => ({ ...p, complexity: e.target.value }))}
+                >
+                  <option value="BEGINNER">Beginner</option>
+                  <option value="INTERMEDIATE">Intermediate</option>
+                  <option value="ADVANCED">Advanced</option>
+                </select>
+              </div>
 
               <input
                 className={inputClass}
-                placeholder="Project title"
-                value={project.title}
-                onChange={e =>
-                  setProject(p => ({ ...p, title: e.target.value }))
-                }
+                type="url"
+                placeholder="Project URL (e.g. https://github.com/...)"
+                value={project.projectUrl}
+                onChange={e => setProject(p => ({ ...p, projectUrl: e.target.value }))}
               />
 
               <textarea
-                className={inputClass}
-                placeholder="Description"
+                className={`${inputClass} resize-none`}
+                rows={2}
+                placeholder="Brief description of what you built..."
                 value={project.description}
-                onChange={e =>
-                  setProject(p => ({ ...p, description: e.target.value }))
-                }
+                onChange={e => setProject(p => ({ ...p, description: e.target.value }))}
               />
-
-              <input
-                className={inputClass}
-                placeholder="Tech stack"
-                value={project.techStack}
-                onChange={e =>
-                  setProject(p => ({ ...p, techStack: e.target.value }))
-                }
-              />
-
-              <input
-                className={inputClass}
-                placeholder="Project URL"
-                value={project.projectUrl}
-                onChange={e =>
-                  setProject(p => ({ ...p, projectUrl: e.target.value }))
-                }
-              />
-
-              <select
-                className={inputClass}
-                value={project.complexity}
-                onChange={e =>
-                  setProject(p => ({ ...p, complexity: e.target.value }))
-                }
-              >
-                <option value="BEGINNER">Beginner</option>
-                <option value="INTERMEDIATE">Intermediate</option>
-                <option value="ADVANCED">Advanced</option>
-              </select>
 
               <button
                 type="button"
                 onClick={addProject}
-                className="text-sm text-[#7A8B6A] font-semibold"
+                disabled={!project.title}
+                className="text-sm bg-[#F5F2EB] hover:bg-[#E8E1D5] text-[#7A8B6A] font-bold px-4 py-2 rounded-lg transition disabled:opacity-50"
               >
-                + Add Project
+                + Add Project to List
               </button>
             </div>
           </div>
 
-          {/* ERROR */}
+          {/* ERROR DISPLAY */}
           {error && (
-            <p className="text-red-500 text-sm">{error}</p>
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+              ⚠ {error}
+            </div>
           )}
 
-          {/* SUBMIT */}
+          {/* FIXED: SUBMIT BUTTON TYPE */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={loading}
             className={btnClass}
           >
-            {loading ? "Saving..." : "Save Profile →"}
+            {loading ? "Saving Profile..." : "Save Profile →"}
           </button>
 
-        </div>
+        </form>
       </div>
     </div>
   );

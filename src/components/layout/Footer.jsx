@@ -46,7 +46,7 @@ export default function Footer() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h1 className="font-serif text-3xl font-bold">JobPortal</h1>
+            <h1 className="font-serif text-3xl font-bold">सीपसेतु</h1>
 
             <motion.div
               className="w-12 h-[2px] bg-[#7A8B6A] mt-2"
@@ -127,7 +127,7 @@ export default function Footer() {
           className="mt-12 pt-6 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4"
         >
           <p className="text-xs text-gray-500">
-            © 2026 JobPortal. Built with care.
+            © 2026 सीपसेतु. Built with care.
           </p>
 
           <div className="flex gap-6 text-xs text-gray-500">
