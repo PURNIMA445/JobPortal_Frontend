@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Card from "./Card";
 
 export default function JobCard({
   title,
@@ -7,41 +8,44 @@ export default function JobCard({
   type,
   salary,
   className = "",
+  outerClassName = "",
   onClick,
 }) {
   return (
-    <div
+    <Card
       onClick={onClick}
-      className={cn(
-        "cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition",
-        "hover:shadow-md hover:-translate-y-1",
-        className
+      outerClassName={cn(
+        "cursor-pointer hover:-translate-y-1 hover:shadow-lg transition-all",
+        outerClassName
       )}
+      className={className}
     >
       {/* Job Title */}
-      <h2 className="text-lg font-semibold text-slate-800">
+      <h2 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
         {title}
       </h2>
 
       {/* Company */}
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-gray-600 font-medium mb-4">
         {company}
       </p>
 
       {/* Details */}
-      <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-600">
-        <span className="rounded-full bg-slate-100 px-2 py-1">
+      <div className="mt-auto flex flex-wrap gap-2 text-xs font-semibold text-gray-700">
+        <span className="bg-[#FDFBF7] border border-[#EAE5D9] px-3 py-1 rounded-full">
           📍 {location}
         </span>
 
-        <span className="rounded-full bg-slate-100 px-2 py-1">
+        <span className="bg-[#FDFBF7] border border-[#EAE5D9] px-3 py-1 rounded-full">
           ⏱ {type}
         </span>
 
-        <span className="rounded-full bg-slate-100 px-2 py-1">
-          💰 {salary}
-        </span>
+        {salary && (
+          <span className="bg-[#FDFBF7] border border-[#EAE5D9] px-3 py-1 rounded-full">
+            💰 {salary}
+          </span>
+        )}
       </div>
-    </div>
+    </Card>
   );
 }

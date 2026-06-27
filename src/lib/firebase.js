@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 //import { initializeApp } from "firebase/app";
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -18,12 +18,14 @@ const firebaseConfig = {
 // 1. Initialize Firebase safely (prevents Next.js crash)
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// 2. Set up Auth and Google
+// 2. Set up Auth and Providers
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account"
 });
 
-// 3. EXPORT them so SignupPage.js can find them!
-export { auth, googleProvider };
+const githubProvider = new GithubAuthProvider();
+
+// 3. EXPORT them so components can find them!
+export { auth, googleProvider, githubProvider };

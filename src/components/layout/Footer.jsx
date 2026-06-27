@@ -55,7 +55,7 @@ export default function Footer() {
             />
 
             <p className="text-sm text-gray-600 mt-4 leading-relaxed">
-              Careers aren’t found. They’re built — step by step, opportunity by opportunity.
+              Careers aren’t found. They’re built step by step, opportunity by opportunity.
             </p>
           </motion.div>
 
@@ -67,14 +67,14 @@ export default function Footer() {
             className="flex flex-col gap-3"
           >
             <span className="text-xs uppercase tracking-widest text-gray-500">
-              Explore
+              Quick Links
             </span>
 
             {[
               { name: "Home", href: "/" },
               { name: "Explore", href: "/explore" },
-              { name: "About", href: "/about" },
-              { name: "Contact", href: "/contact" },
+              { name: "Jobs", href: "/jobs" },
+  
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -91,7 +91,7 @@ export default function Footer() {
             ))}
           </motion.div>
 
-          {/* CTA */}
+          {/* CONTACT INFO */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -99,22 +99,21 @@ export default function Footer() {
             className="flex flex-col gap-4"
           >
             <span className="text-xs uppercase tracking-widest text-gray-500">
-              Join Now
+              Get in Touch
             </span>
 
             <p className="text-sm text-gray-600">
-              Get matched with opportunities that actually fit your journey.
+              Have questions or need support? Our team is here to help you navigate your career journey.
             </p>
 
-            <Link href="/get-started">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="w-max px-5 py-2 bg-[#7A8B6A] text-white font-semibold rounded-md shadow-md"
-              >
-                Create Account
-              </motion.button>
-            </Link>
+            <div className="flex flex-col gap-2 mt-2">
+              <a href="mailto:support@seepsetu.com" className="text-sm font-medium text-[#7A8B6A] hover:underline">
+                support@seepsetu.com
+              </a>
+              <span className="text-sm text-gray-500">
+                +977-1-2345678
+              </span>
+            </div>
           </motion.div>
 
         </div> {/* ✅ FIXED missing closing div */}

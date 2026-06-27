@@ -1,33 +1,56 @@
-import Button from "@/components/ui/Button";
-import useAuth from "@/hooks/useAuth";
-// import { getJobs } from "@/lib/api";
-import Input from "@/components/ui/Input";
-import Card from "@/components/ui/Card";
-export default function HomePage() {
-  const { user } = useAuth();
+"use client";
 
-  // const jobs = getJobs();
+import { useState, useEffect } from "react";
+import { getAllJobs } from "@/lib/api";
+
+import HeroSection from "@/components/sections/HeroSection";
+import LatestOpportunitiesSection from "@/components/sections/LatestOpportunitiesSection";
+import FeatureSection from "@/components/sections/FeatureSection";
+import TopCompaniesSection from "@/components/sections/TopCompaniesSection";
+import CTASection from "@/components/sections/CTASection";
+
+export default function HomePage() {
+  const [jobs, setJobs] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check for auth token to dynamically render CTA
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    }
+
+    // Fetch jobs for dynamic count and latest opportunities section
+    getAllJobs()
+      .then(data => {
+        if (Array.isArray(data)) {
+          setJobs(data.reverse()); // Reverse to show latest first (assuming ID order)
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   return (
-    <>
-      <h1>Hello {user}</h1>
+    <div className="min-h-screen bg-white font-sans text-gray-900 overflow-hidden selection:bg-[#7A8B6A] selection:text-white">
+      {/* ───── HERO & LATEST SECTION ───── */}
+      <div className="relative">
+        <HeroSection jobsCount={jobs.length} isLoggedIn={isLoggedIn} />
+        
 
-      {/* <p>{jobs[0]}</p> */}
-      <div className="flex gap-1.5">
-        <Button className="px-4 py-4 text-lg">
-          Look here
-        </Button>
-        <div className="p-6">
-          <Input placeholder="Enter your name" />
+        {/* ───── FEATURES SECTION ───── */}
+      <FeatureSection />
+
+        {/* We wrap the LatestOpportunities in a container that pulls it up a bit since they originally shared the same section padding */}
+        <div className="relative -mt-16 pb-20 md:pb-32 px-6 z-10">
+           <LatestOpportunitiesSection jobs={jobs} />
         </div>
-        <Card >
-        <h2 className="text-lg font-semibold">Hello Card</h2>
-        <p className="text-sm text-slate-500">
-          This is reusable card component
-        </p>
-      </Card>
-      
       </div>
-    </>
+
+      {/* ───── TOP COMPANIES SECTION ───── */}
+      <TopCompaniesSection />
+
+      {/* ───── DUAL-PATH CTA SECTION ───── */}
+      <CTASection isLoggedIn={isLoggedIn} />
+    </div>
   );
 }
