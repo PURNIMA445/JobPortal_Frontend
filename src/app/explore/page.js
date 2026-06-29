@@ -189,7 +189,7 @@ export default function ExplorePage() {
           className="text-5xl md:text-7xl font-bold text-[#111111] mb-6 tracking-tight"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Discover Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7D9976] to-[#A7B99A] italic">Path</span>
+          Discover Your <span className="text-transparent bg-clip-text bg-linear-to-r from-[#7D9976] to-[#A7B99A] italic">Path</span>
         </motion.h1>
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
@@ -282,7 +282,7 @@ export default function ExplorePage() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
               onClick={() => handleTagClick(ind.name)}
-              className={`relative p-8 rounded-[2rem] ${ind.color} group cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-black/5`}
+              className={`relative p-8 rounded-4xl ${ind.color} group cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-black/5`}
             >
               <div className="absolute -right-10 -bottom-10 opacity-20 group-hover:scale-110 transition-transform duration-500">
                 <span className="text-9xl">{ind.icon}</span>

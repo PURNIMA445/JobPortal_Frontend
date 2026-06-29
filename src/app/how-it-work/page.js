@@ -92,7 +92,7 @@ export default function Work() {
           {jobs.map((job) => (
             <div
               key={job.id}
-              className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0px_#2B2B2B] hover:translate-y-[-2px] transition"
+              className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0px_#2B2B2B] hover:translate-y-0.5 transition"
             >
               {/* TITLE */}
               <div className="flex justify-between items-center">

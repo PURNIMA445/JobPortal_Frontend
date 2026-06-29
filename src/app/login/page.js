@@ -58,8 +58,12 @@ export default function LoginPage() {
         window.location.href = "/";
       }
     } catch (err) {
-      setError(err?.message || "Login failed");
-    } finally {
+      if (err.status === 403 && err.email) {
+        router.push(`/verify-email?email=${encodeURIComponent(err.email)}`);
+      } else {
+        setError(err?.message || "Login failed");
+      }
+    }finally {
       setLoading(false);
     }
   };

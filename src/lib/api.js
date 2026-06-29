@@ -3,25 +3,24 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 async function handleResponse(response) {
     const text = await response.text();
     let data;
-
+  
     try {
-        data = text ? JSON.parse(text) : null;
+      data = text ? JSON.parse(text) : null;
     } catch {
-        data = text;
+      data = text;
     }
-
+  
     if (!response.ok) {
-        throw new Error(
-            typeof data === "string"
-                ? data
-                : data?.message
-                ? data.message
-                : `Error ${response.status}`
-        );
+      const error = new Error(
+        typeof data === "string" ? data : data?.message ? data.message : `Error ${response.status}`
+      );
+      error.status = response.status;
+      error.email = data?.email || null; // preserve email from backend
+      throw error;
     }
-
+  
     return data;
-}
+  }
 
 function getToken() {
     if (typeof window === "undefined") return null;

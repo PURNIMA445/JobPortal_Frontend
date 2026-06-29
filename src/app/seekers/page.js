@@ -96,7 +96,7 @@ export default function SeekersLanding() {
       {/* ───── THE HOOK: CV SCANNER ───── */}
       <section className="py-10 px-6 -mt-12 relative z-20">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-[#E8E1D5] overflow-hidden min-h-[440px]">
+          <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-[#E8E1D5] overflow-hidden min-h-110">
             
             <AnimatePresence mode="wait">
               {/* STATE 1: UPLOAD */}
@@ -104,7 +104,7 @@ export default function SeekersLanding() {
                 <motion.div 
                   key="upload"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="p-12 text-center flex flex-col items-center justify-center min-h-[440px]"
+                  className="p-12 text-center flex flex-col items-center justify-center min-h-110"
                 >
                   <div className="w-24 h-24 bg-[#F9F8F4] rounded-full flex items-center justify-center mb-8 border border-[#E8E1D5] shadow-inner">
                     <svg className="w-10 h-10 text-[#7A8B6A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
@@ -138,7 +138,7 @@ export default function SeekersLanding() {
                 <motion.div 
                   key="analyzing"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="p-12 text-center flex flex-col items-center justify-center min-h-[440px] bg-[#FDFBF7]"
+                  className="p-12 text-center flex flex-col items-center justify-center min-h-110 bg-[#FDFBF7]"
                 >
                   <div className="relative mb-8">
                      <motion.div 
@@ -163,7 +163,7 @@ export default function SeekersLanding() {
                 <motion.div 
                   key="results"
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  className="relative min-h-[440px] bg-[#FDFBF7] overflow-hidden"
+                  className="relative min-h-110 bg-[#FDFBF7] overflow-hidden"
                 >
                   {/* The Teaser Content */}
                   <div className="p-8 md:p-12">
@@ -201,7 +201,7 @@ export default function SeekersLanding() {
                     </div>
 
                     {/* Fake Blurred Section for Freemium Wall */}
-                    <div className="relative mt-12 filter blur-[8px] opacity-30 select-none">
+                    <div className="relative mt-12 filter blur-sm opacity-30 select-none">
                       <p className="text-sm font-bold text-[#1C1F1A] mb-4 uppercase tracking-wide">Critical Keyword Gaps & Active Matches</p>
                       <div className="bg-white h-28 rounded-2xl border border-[#E8E1D5] mb-4"></div>
                       <div className="bg-white h-28 rounded-2xl border border-[#E8E1D5]"></div>
@@ -209,7 +209,7 @@ export default function SeekersLanding() {
                   </div>
 
                   {/* The Premium Lock Wall */}
-                  <div className="absolute inset-0 bottom-0 top-1/2 bg-gradient-to-t from-white via-white/95 to-transparent flex flex-col items-center justify-end pb-12 px-6">
+                  <div className="absolute inset-0 bottom-0 top-1/2 bg-linear-to-t from-white via-white/95 to-transparent flex flex-col items-center justify-end pb-12 px-6">
                     <div className="bg-white p-8 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-[#E8E1D5] text-center max-w-lg w-full transform translate-y-4">
                       <div className="w-16 h-16 bg-[#FDFBF7] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#E8E1D5]">
                         <svg className="w-7 h-7 text-[#C8A96E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>

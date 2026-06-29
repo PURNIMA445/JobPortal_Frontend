@@ -1,5 +1,5 @@
 "use client";
-import { signupUser, loginUser } from "@/lib/api";
+import { signupUser } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -47,46 +47,28 @@ export default function SignupPage() {
   // Add loginUser to your imports at the top:
 // import { signupUser, loginUser } from "@/lib/api";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    try {
-      const payload = {
-        email: form.email,
-        password: form.password,
-        role: role, 
-      };
+  try {
+    const payload = {
+      email: form.email,
+      password: form.password,
+      role: role,
+    };
 
-      // 1. Create the account
-      await signupUser(payload);
-      
-      // 2. Automatically log them in using the exact same credentials
-      const loginData = await loginUser({ email: form.email, password: form.password });
-      
-      // 3. Save the tokens (both localStorage and cookies for middleware)
-      if (loginData && loginData.token) {
-        localStorage.setItem("token", loginData.token);
-        localStorage.setItem("role", role);
-        document.cookie = `token=${loginData.token}; path=/; max-age=86400`;
-      }
+    await signupUser(payload);
 
-      // 4. Smart Redirect based on the selected role
-      if (role === "RECRUITER") {
-        router.push("/recruiter/setup");
-      } else if (role === "CANDIDATE") {
-        router.push("/profile/setup");
-      } else {
-        router.push("/");
-      }
+    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
 
-    } catch (err) {
-      setError(err.message || "Signup failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    setError(err.message || "Signup failed. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // --- SOCIAL LOGIN LOGIC ---
   const handleSocialLogin = async (provider) => {
